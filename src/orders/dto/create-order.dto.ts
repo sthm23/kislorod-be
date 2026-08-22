@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsEnum } from 'class-validator';
 import { OrderStatus } from 'generated/prisma/browser';
 
 export class CreateOrderDto {
@@ -27,13 +27,10 @@ export class CreateOrderDto {
     location!: string
 
     @IsNotEmpty()
+    @IsEnum(OrderStatus)
     status!: OrderStatus
-
-    @IsNotEmpty()
-    @IsString()
-    createdAt!: string
 
     @IsOptional()
     @IsString()
-    updatedAt?: string
+    userId?: string
 }
