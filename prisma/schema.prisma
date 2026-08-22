@@ -13,26 +13,31 @@ datasource db {
   provider = "postgresql"
 }
 
+enum OrderStatus {
+  ACTIVE
+  RESERVED
+  CLOSED
+}
+
 model Order {
-  id          String    @id @default(uuid())
+  id          String      @id @default(uuid())
   productName String
   startDate   DateTime
   endDate     DateTime?
   pricePerDay Float
   phoneNumber String
   location    String
-  status      String
-  createdAt   DateTime  @default(now())
+  status      OrderStatus
+  createdAt   DateTime    @default(now())
   updatedAt   DateTime?
 }
 
 model User {
-  id        String    @id @default(uuid())
+  id        String   @id @default(uuid())
   name      String
-  email     String    @unique
-  password  String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
+  userId    String   @unique
+  phone     String
+  createdAt DateTime @default(now())
 }
 
 model Report {
