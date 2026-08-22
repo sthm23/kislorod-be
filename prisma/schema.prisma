@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Order {
+  id          String    @id @default(uuid())
+  productName String
+  startDate   DateTime
+  endDate     DateTime?
+  pricePerDay Float
+  phoneNumber String
+  location    String
+  status      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime?
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+}
+
+model Report {
+  id                String @id @default(uuid())
+  totalOrders       Int
+  activeOrders      Int
+  reservedOrders    Int
+  closedOrders      Int
+  totalRevenue      Float
+  averageOrderValue Float
+}
