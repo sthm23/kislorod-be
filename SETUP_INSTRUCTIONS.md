@@ -82,16 +82,16 @@ model User {
 
 ```env
 # Токен вашего Telegram бота (получить у @BotFather)
-TELEGRAM_BOT_TOKEN=8643626629:AAFIz5M2Zs_tvM9B-m5HXpx0DK2hYus4068
+TELEGRAM_BOT_TOKEN=<YOUR_TELEGRAM_BOT_TOKEN>
 
 # URL вашего Telegram Mini App
-TELEGRAM_MINI_APP_URL=https://t.me/your_bot_name/app_name
+TELEGRAM_MINI_APP_URL=https://t.me/kislorod-be/app
 
 # Порт приложения
 PORT=4000
 
 # База данных PostgreSQL
-DATABASE_URL=postgresql://kislorod_tukhtamishev:&dIn$4_AO1HY;n=*@37.153.159.11:5432/kislorod_rental_db?schema=public
+DATABASE_URL=<YOUR_POSTGRES_CONNECTION_STRING>
 ```
 
 **ВАЖНО:** Обновите `TELEGRAM_MINI_APP_URL` на реальный URL вашего Mini App!
