@@ -7,13 +7,11 @@ const releaseDir = path.join(root, 'release');
 const filesToCopy = [
     'package.json',
     'package-lock.json',
-    'prisma.config.ts',
     '.env.example',
 ];
 
 const dirsToCopy = [
     'dist',
-    'prisma',
 ];
 
 function ensureExists(targetPath) {
@@ -49,11 +47,12 @@ function writeReleaseReadme() {
         '1. Upload all files from this folder.',
         '2. Install production dependencies: npm ci --omit=dev',
         '3. Set environment variables on hosting panel (DATABASE_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_MINI_APP_URL, PORT).',
-        '4. Apply migrations: npm run prisma:migrate:deploy',
-        '5. Start service: npm run start:prod',
+        '4. Start service: npm run start:prod',
         '',
-        'Or run both steps 4+5 with:',
-        'npm run start:prod:migrate',
+        'Migrations are applied automatically on application startup.',
+        '',
+        'Optional manual migration run:',
+        'npm run migration:run:prod',
         '',
     ].join('\n');
 
@@ -62,7 +61,6 @@ function writeReleaseReadme() {
 
 function main() {
     ensureExists(path.join(root, 'dist'));
-    ensureExists(path.join(root, 'prisma'));
     ensureExists(path.join(root, 'package.json'));
 
     fs.rmSync(releaseDir, { recursive: true, force: true });

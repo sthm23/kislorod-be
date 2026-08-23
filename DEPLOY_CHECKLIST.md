@@ -17,11 +17,11 @@ Use this when your hosting can run build/start commands.
 3. Start command:
 - npm run start:prod
 
-4. Run migrations before start:
-- npm run prisma:migrate:deploy
+4. Run migrations before start (optional, manual):
+- npm run migration:run:prod
 
-Optional one-command start with migrations:
-- npm run start:prod:migrate
+Note:
+- npm run start:prod already applies migrations automatically (migrationsRun: true)
 
 ## 2) Build-only upload checklist (release folder)
 
@@ -39,8 +39,8 @@ Use this when hosting asks to upload only build artifact.
 4. On hosting install production dependencies:
 - npm ci --omit=dev
 
-5. Run database migrations:
-- npm run prisma:migrate:deploy
+5. Run database migrations (optional, manual):
+- npm run migration:run:prod
 
 6. Start backend:
 - npm run start:prod
@@ -50,13 +50,12 @@ Use this when hosting asks to upload only build artifact.
 If your local machine cannot reach DB, do migrations in the same network where app runs:
 
 1. Preferred:
-- run npm run prisma:migrate:deploy on hosting (or CI runner connected to DB).
+- run application startup on hosting (migrations are auto-applied).
+- optional manual run before startup: npm run migration:run:prod.
 
 2. Fallback when hosting cannot run CLI and only SQL panel is available:
-- create migrations in project source control,
-- open each migration.sql from prisma/migrations,
-- execute SQL manually in DB panel in order.
+- create SQL migration files from src/migrations and execute them manually in DB panel in order.
 
 Important:
-- do not use prisma migrate dev in production.
-- use prisma migrate deploy in production.
+- do not use synchronize: true in production.
+- use TypeORM migrations (auto on startup or manual migration:run:prod).

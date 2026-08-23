@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -12,7 +12,7 @@ export class OrdersService {
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
     private readonly usersService: UsersService,
-  ) {}
+  ) { }
 
   async create(createOrderDto: CreateOrderDto, telegramId?: string) {
     let userId = createOrderDto.userId;
@@ -102,7 +102,7 @@ export class OrdersService {
   async remove(id: string) {
     const order = await this.orderRepository.findOne({ where: { id } });
     if (!order) {
-      throw new Error(`Order with ID ${id} not found`);
+      throw new NotFoundException(`Order with ID ${id} not found`);
     }
     return this.orderRepository.remove(order);
   }

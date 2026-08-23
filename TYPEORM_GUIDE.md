@@ -28,17 +28,22 @@ npm run build            # Build проект
 
 **Создание новой миграции:**
 ```bash
-npm run migration:create src/migrations/MigrationName
+npm run migration:create
 ```
 
 **Генерация миграции из изменений entities:**
 ```bash
-npm run migration:generate src/migrations/MigrationName
+npm run migration:generate
 ```
 
 **Применение миграций:**
 ```bash
 npm run migration:run
+```
+
+**Применение миграций в production (из собранного dist):**
+```bash
+npm run migration:run:prod
 ```
 
 **Откат последней миграции:**
@@ -109,9 +114,10 @@ await this.repository.remove(entity);
 ## Важные замечания
 
 1. **synchronize: false** - всегда используйте миграции в production
-2. **Nullable поля** - используйте `| null` в TypeScript типах для nullable колонок
-3. **Relations** - используйте декораторы `@ManyToOne`, `@OneToMany`, `@JoinColumn`
-4. **Enum** - экспортируйте enum из entity файла для использования в DTO
+2. **migrationsRun: true** - миграции автоматически применяются на `npm run start:prod`
+3. **Nullable поля** - используйте `| null` в TypeScript типах для nullable колонок
+4. **Relations** - используйте декораторы `@ManyToOne`, `@OneToMany`, `@JoinColumn`
+5. **Enum** - экспортируйте enum из entity файла для использования в DTO
 
 ## Подключение к БД
 

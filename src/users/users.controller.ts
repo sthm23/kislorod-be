@@ -14,7 +14,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -26,14 +26,14 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.usersService.findOne(id);
-  }
-
   @Get('telegram/:telegramId')
   findByTelegramId(@Param('telegramId') telegramId: string) {
     return this.usersService.findByTelegramId(telegramId);
+  }
+
+  @Get(':id')
+  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')

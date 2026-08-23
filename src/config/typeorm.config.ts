@@ -10,6 +10,10 @@ export const getTypeOrmConfig = (
   type: 'postgres',
   url: configService.get<string>('DATABASE_URL'),
   entities: [Order, User, Report],
+  migrations: ['dist/migrations/*.js'],
+  migrationsRun: true,
+  migrationsTransactionMode: 'each',
+  migrationsTableName: 'typeorm_migrations',
   synchronize: false,
   logging: configService.get<string>('NODE_ENV') === 'development',
   ssl:

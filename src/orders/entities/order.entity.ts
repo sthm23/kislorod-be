@@ -41,6 +41,7 @@ export class Order {
   @Column({
     type: 'enum',
     enum: OrderStatus,
+    enumName: 'order_status_enum',
   })
   status!: OrderStatus;
 
@@ -48,12 +49,12 @@ export class Order {
   createdAt!: Date;
 
   @UpdateDateColumn({ nullable: true })
-  updatedAt!: Date;
+  updatedAt: Date | null = null;
 
   @Column({ nullable: true })
-  userId!: string;
+  userId: string | null = null;
 
   @ManyToOne(() => User, (user) => user.orders)
   @JoinColumn({ name: 'userId' })
-  user!: User;
+  user!: User | null;
 }
