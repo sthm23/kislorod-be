@@ -1,16 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { Order } from './entities/order.entity';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
-    private readonly prisma: PrismaService,
+    @InjectRepository(Order)
+    private orderRepository: Repository<Order>,
     private readonly usersService: UsersService,
-  ) { }
-
+  ) {}
 
   async create(createOrderDto: CreateOrderDto, telegramId?: string) {
     let userId = createOrderDto.userId;
@@ -22,47 +24,44 @@ export class OrdersService {
       }
     }
 
-    return this.prisma.order.create({
-      data: {
-        ...createOrderDto,
-        userId,
-        startDate: new Date(createOrderDto.startDate),
-        endDate: createOrderDto.endDate ? new Date(createOrderDto.endDate) : null,
-      },
-      include: {
-        user: true,
-      },
+    const order = this.orderRepository.create({
+      ...createOrderDto,
+      userId,
+      startDate: new Date(createOrderDto.startDate),
+      endDate: createOrderDto.endDate ? new Date(createOrderDto.endDate) : null,
     });
+
+    return this.orderRepository.save(order);
   }
 
   findAll() {
-    return this.prisma.order.findMany({
-      include: {
+    return this.orderRepository.find({
+      relations: {
         user: true,
       },
-      orderBy: {
-        createdAt: 'desc',
+      order: {
+        createdAt: 'DESC',
       },
     });
   }
 
   findOne(id: string) {
-    return this.prisma.order.findUnique({
+    return this.orderRepository.findOne({
       where: { id },
-      include: {
+      relations: {
         user: true,
       },
     });
   }
 
   findByUserId(userId: string) {
-    return this.prisma.order.findMany({
+    return this.orderRepository.find({
       where: { userId },
-      include: {
+      relations: {
         user: true,
       },
-      orderBy: {
-        createdAt: 'desc',
+      order: {
+        createdAt: 'DESC',
       },
     });
   }
@@ -77,24 +76,34 @@ export class OrdersService {
     return this.findByUserId(user.id);
   }
 
-  update(id: string, updateOrderDto: UpdateOrderDto) {
-    return this.prisma.order.update({
+  async update(id: string, updateOrderDto: UpdateOrderDto) {
+    const updateData: any = {
+      ...updateOrderDto,
+    };
+
+    if (updateOrderDto.startDate) {
+      updateData.startDate = new Date(updateOrderDto.startDate);
+    }
+
+    if (updateOrderDto.endDate) {
+      updateData.endDate = new Date(updateOrderDto.endDate);
+    }
+
+    await this.orderRepository.update(id, updateData);
+
+    return this.orderRepository.findOne({
       where: { id },
-      data: {
-        ...updateOrderDto,
-        startDate: updateOrderDto.startDate ? new Date(updateOrderDto.startDate) : undefined,
-        endDate: updateOrderDto.endDate ? new Date(updateOrderDto.endDate) : undefined,
-        updatedAt: new Date(),
-      },
-      include: {
+      relations: {
         user: true,
       },
     });
   }
 
-  remove(id: string) {
-    return this.prisma.order.delete({
-      where: { id }
-    })
+  async remove(id: string) {
+    const order = await this.orderRepository.findOne({ where: { id } });
+    if (!order) {
+      throw new Error(`Order with ID ${id} not found`);
+    }
+    return this.orderRepository.remove(order);
   }
 }

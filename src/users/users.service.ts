@@ -1,30 +1,34 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from '../prisma/prisma.service';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({
-      data: createUserDto,
-    });
+    const user = this.userRepository.create(createUserDto);
+    return this.userRepository.save(user);
   }
 
   async findAll() {
-    return this.prisma.user.findMany({
-      include: {
+    return this.userRepository.find({
+      relations: {
         orders: true,
       },
     });
   }
 
   async findOne(id: string) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.userRepository.findOne({
       where: { id },
-      include: {
+      relations: {
         orders: true,
       },
     });
@@ -37,9 +41,9 @@ export class UsersService {
   }
 
   async findByTelegramId(telegramId: string) {
-    return this.prisma.user.findUnique({
+    return this.userRepository.findOne({
       where: { telegramId },
-      include: {
+      relations: {
         orders: true,
       },
     });
@@ -58,17 +62,16 @@ export class UsersService {
   async update(id: string, updateUserDto: UpdateUserDto) {
     await this.findOne(id);
 
-    return this.prisma.user.update({
+    await this.userRepository.update(id, updateUserDto);
+
+    return this.userRepository.findOne({
       where: { id },
-      data: updateUserDto,
     });
   }
 
   async remove(id: string) {
-    await this.findOne(id);
+    const user = await this.findOne(id);
 
-    return this.prisma.user.delete({
-      where: { id },
-    });
+    return this.userRepository.remove(user);
   }
 }

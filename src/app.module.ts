@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrdersModule } from './orders/orders.module';
-import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { TelegramModule } from './telegram/telegram.module';
+import { getTypeOrmConfig } from './config/typeorm.config';
 
 @Module({
   imports: [
@@ -11,7 +12,10 @@ import { TelegramModule } from './telegram/telegram.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    PrismaModule,
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: getTypeOrmConfig,
+    }),
     UsersModule,
     TelegramModule,
     OrdersModule,
@@ -19,4 +23,4 @@ import { TelegramModule } from './telegram/telegram.module';
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

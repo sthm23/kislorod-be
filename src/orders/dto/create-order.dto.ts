@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString, IsEnum } from 'class-validator';
-import { OrderStatus } from 'generated/prisma/browser';
+import { OrderStatus } from '../entities/order.entity';
 
 export class CreateOrderDto {
     @IsNotEmpty()
