@@ -16,7 +16,6 @@
     "migration:generate": "npm run typeorm -- migration:generate src/migrations/GeneratedMigration -d src/data-source.ts",
     "migration:create": "npm run typeorm -- migration:create src/migrations/ManualMigration",
     "migration:run": "npm run typeorm -- migration:run -d src/data-source.ts",
-    "migration:run:prod": "node ./node_modules/typeorm/cli.js migration:run -d dist/data-source.js",
     "migration:revert": "npm run typeorm -- migration:revert -d src/data-source.ts",
     "release:prepare": "node scripts/prepare-release.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

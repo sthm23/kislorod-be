@@ -4,8 +4,6 @@ export class InitSchema1724515200000 implements MigrationInterface {
     name = 'InitSchema1724515200000';
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
-
         await queryRunner.query(`
       DO $$
       BEGIN
@@ -23,7 +21,7 @@ export class InitSchema1724515200000 implements MigrationInterface {
 
         await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "User" (
-        "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+        "id" uuid NOT NULL DEFAULT gen_random_uuid(),
         "name" character varying,
         "telegramId" character varying NOT NULL,
         "telegramUserId" character varying,
@@ -37,7 +35,7 @@ export class InitSchema1724515200000 implements MigrationInterface {
 
         await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "Report" (
-        "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+        "id" uuid NOT NULL DEFAULT gen_random_uuid(),
         "totalOrders" integer NOT NULL,
         "activeOrders" integer NOT NULL,
         "reservedOrders" integer NOT NULL,
@@ -50,7 +48,7 @@ export class InitSchema1724515200000 implements MigrationInterface {
 
         await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "Order" (
-        "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+        "id" uuid NOT NULL DEFAULT gen_random_uuid(),
         "productName" character varying NOT NULL,
         "startDate" TIMESTAMP NOT NULL,
         "endDate" TIMESTAMP,

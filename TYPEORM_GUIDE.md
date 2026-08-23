@@ -43,7 +43,7 @@ npm run migration:run
 
 **Применение миграций в production (из собранного dist):**
 ```bash
-npm run migration:run:prod
+node dist/main.js
 ```
 
 **Откат последней миграции:**
@@ -114,7 +114,7 @@ await this.repository.remove(entity);
 ## Важные замечания
 
 1. **synchronize: false** - всегда используйте миграции в production
-2. **migrationsRun: true** - миграции автоматически применяются на `npm run start:prod`
+2. **migrationsRun: true** - миграции автоматически применяются на старте `node dist/main.js`
 3. **Nullable поля** - используйте `| null` в TypeScript типах для nullable колонок
 4. **Relations** - используйте декораторы `@ManyToOne`, `@OneToMany`, `@JoinColumn`
 5. **Enum** - экспортируйте enum из entity файла для использования в DTO
