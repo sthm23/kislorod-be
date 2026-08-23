@@ -5,6 +5,7 @@ const root = process.cwd();
 const releaseDir = path.join(root, 'release');
 
 const filesToCopy = [
+    '.env',
     '.env.example',
 ];
 
@@ -54,9 +55,12 @@ function createMinimalPackageJson() {
     const minimal = {
         name: original.name,
         version: original.version,
-        description: 'Production build - all dependencies bundled in dist/main.js',
+        description: 'Production build - bundled app with external telegraf runtime',
         scripts: {
             start: 'node dist/main.js'
+        },
+        dependencies: {
+            telegraf: original.dependencies.telegraf,
         },
         engines: {
             node: '>=18.0.0'
@@ -76,10 +80,10 @@ function writeReleaseReadme() {
         '',
         'This directory is generated automatically for deployment.',
         '',
-        '## ВАЖНО: Все зависимости уже включены в dist/main.js',
+        '## ВАЖНО',
         '',
-        'НЕ запускайте `npm install` на хостинге! Это вызовет ошибку TAR_ENTRY_ERROR из-за лимита inodes.',
-        'Webpack собрал все зависимости (TypeORM, pg, NestJS и др.) в один файл dist/main.js.',
+        'Почти все зависимости уже включены в dist/main.js.',
+        'Отдельно устанавливается только telegraf (runtime для Telegram-бота).',
         '',
         '## Deploy steps on aHOST',
         '',
@@ -99,13 +103,14 @@ function writeReleaseReadme() {
         '   - Application URL: ваш домен',
         '   - Application startup file: dist/main.js',
         '   - Node.js version: 18.x или выше',
-        '4. НЕ устанавливайте зависимости! Просто запустите приложение.',
+        '4. Установите зависимости: `npm install --omit=dev`',
+        '5. Запустите приложение.',
         '',
-        '## Размер bundle',
+        '## Содержимое релиза',
         '',
-        'dist/main.js содержит весь код приложения и все зависимости.',
-        'Размер файла: ~3-5 MB.',
-        'Количество файлов: 3 (package.json, dist/main.js, .env.example).',
+        '- dist/main.js (основной bundled runtime)',
+        '- package.json (только telegraf dependency)',
+        '- .env / .env.example',
         '',
         '## Миграции',
         '',
@@ -131,7 +136,7 @@ function writeReleaseReadme() {
         'Инструмент: https://www.urlencoder.org/',
         '',
         '### "TAR_ENTRY_ERROR / Disk quota exceeded"',
-        'Не запускайте npm install! Все зависимости уже в dist/main.js.',
+        'В этом релизе устанавливается только telegraf, поэтому inode usage остается низким.',
         '',
     ].join('\n');
 
@@ -169,8 +174,8 @@ function main() {
         console.log('  ' + (stats.size / 1024 / 1024).toFixed(2) + ' MB');
     }
     console.log('');
-    console.log('⚠ ВАЖНО: НЕ запускайте npm install на хостинге!');
-    console.log('  Все зависимости уже включены в dist/main.js');
+    console.log('⚠ ВАЖНО: Установите production зависимость перед стартом:');
+    console.log('  npm install --omit=dev');
 }
 
 main();

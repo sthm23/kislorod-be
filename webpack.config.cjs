@@ -7,7 +7,9 @@ module.exports = (options) => {
         mode: 'production',
         target: 'node',
         devtool: false,
-        externals: [],
+        externals: {
+            telegraf: 'commonjs telegraf',
+        },
         output: {
             ...options.output,
             filename: 'main.js',
