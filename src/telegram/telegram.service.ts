@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Telegraf, Markup } from 'telegraf';
+import { Telegraf, Markup, Context } from 'telegraf';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -59,13 +59,9 @@ export class TelegramService implements OnModuleInit {
           username: user.username,
         });
 
-        const miniAppUrl = this.configService.get<string>('TELEGRAM_MINI_APP_URL') || 'https://t.me/kislorodpro_bot';
-
-        await ctx.reply(
-          `✅ Спасибо! Ваш номер телефона сохранен.\n\nТеперь вы можете пользоваться нашим приложением.`,
-          Markup.keyboard([
-            Markup.button.webApp('🚀 Открыть приложение', miniAppUrl),
-          ]).resize()
+        await this.replyWithMiniAppButton(
+          ctx,
+          '✅ Спасибо! Ваш номер телефона сохранен.\n\nТеперь вы можете пользоваться нашим приложением.',
         );
 
         this.logger.log(`User registered: ${createdUser.id} - ${createdUser.phone}`);
@@ -85,14 +81,55 @@ export class TelegramService implements OnModuleInit {
     });
 
     this.bot.command('app', async (ctx) => {
-      const miniAppUrl = this.configService.get<string>('TELEGRAM_MINI_APP_URL') || 'https://t.me/kislorodpro_bot';
-      await ctx.reply(
+      await this.replyWithMiniAppButton(
+        ctx,
         'Откройте приложение для создания заказа:',
-        Markup.keyboard([
-          Markup.button.webApp('🚀 Открыть приложение', miniAppUrl),
-        ]).resize()
       );
     });
+  }
+
+  private getMiniAppUrl(): string {
+    return (
+      this.configService.get<string>('TELEGRAM_MINI_APP_URL') ||
+      'https://kislorod.example.com'
+    );
+  }
+
+  private isValidMiniAppUrl(url: string): boolean {
+    try {
+      const parsed = new URL(url);
+      return (
+        parsed.protocol === 'https:' &&
+        parsed.hostname !== 't.me' &&
+        parsed.hostname !== 'telegram.me'
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  private async replyWithMiniAppButton(
+    ctx: Context,
+    message: string,
+  ) {
+    const miniAppUrl = this.getMiniAppUrl();
+
+    if (this.isValidMiniAppUrl(miniAppUrl)) {
+      await ctx.reply(
+        message,
+        Markup.keyboard([
+          Markup.button.webApp('🚀 Открыть приложение', miniAppUrl),
+        ]).resize(),
+      );
+      return;
+    }
+
+    this.logger.warn(
+      `TELEGRAM_MINI_APP_URL is invalid for web_app button: ${miniAppUrl}`,
+    );
+    await ctx.reply(
+      `${message}\n\nСейчас кнопка Mini App недоступна. Укажите HTTPS URL вашего Mini App в TELEGRAM_MINI_APP_URL.`,
+    );
   }
 
   getBot(): Telegraf {

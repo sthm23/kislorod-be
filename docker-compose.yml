@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: dev_kislorod_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PG_DB}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    ports:
+      # For production: comment out this line to prevent external access
+      - "5432:5432"
+    volumes:
+      - postgres_kislorod_data:/var/lib/postgresql/data
+      - ./backups:/backups
+volumes:
+  postgres_kislorod_data:

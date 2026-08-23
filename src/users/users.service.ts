@@ -10,7 +10,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto) {
     const user = this.userRepository.create(createUserDto);
@@ -50,13 +50,20 @@ export class UsersService {
   }
 
   async findOrCreate(createUserDto: CreateUserDto) {
-    const existingUser = await this.findByTelegramId(createUserDto.telegramId);
+    await this.userRepository.upsert(createUserDto, {
+      conflictPaths: ['telegramId'],
+      skipUpdateIfNoValuesChanged: true,
+    });
 
-    if (existingUser) {
-      return existingUser;
+    const user = await this.findByTelegramId(createUserDto.telegramId);
+
+    if (!user) {
+      throw new NotFoundException(
+        `User with telegramId ${createUserDto.telegramId} not found after upsert`,
+      );
     }
 
-    return this.create(createUserDto);
+    return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
